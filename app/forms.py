@@ -16,6 +16,7 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
+    # Email 验证需要安装 email-validator 库
     email = StringField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired()])
     password2 = PasswordField(
@@ -23,7 +24,9 @@ class RegistrationForm(FlaskForm):
     )
     submit = SubmitField("Register")
 
+    # validate_<field_name> 自定义验证器
     def validate_username(self, username):
+        # scalar 返回单个对象或 None
         user = db.session.scalar(sa.select(User).where(User.username == username.data))
         if user is not None:
             raise ValidationError("Please use a different username.")

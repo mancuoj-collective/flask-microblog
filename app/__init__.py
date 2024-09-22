@@ -10,6 +10,7 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
+# @login_required 找不到用户时，重定向到 login 路由
 login.login_view = "login"
 
 from app import models, routes
