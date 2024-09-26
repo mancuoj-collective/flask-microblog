@@ -15,4 +15,5 @@ class Config:
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     MAIL_FROM = os.environ.get("MAIL_FROM")
     ADMINS = os.environ.get("ADMINS", "").split(",")
-    POSTS_PER_PAGE = 25
+    POSTS_PER_PAGE = 20
+    BOOTSTRAP_BOOTSWATCH_THEME = "flatly"

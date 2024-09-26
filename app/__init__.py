@@ -3,6 +3,7 @@ import os
 from logging.handlers import RotatingFileHandler, SMTPHandler
 
 from flask import Flask
+from flask_bootstrap import Bootstrap5
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -18,6 +19,7 @@ login = LoginManager(app)
 # @login_required 找不到用户时，重定向到 login 路由
 login.login_view = "login"
 mail = Mail(app)
+bootstrap = Bootstrap5(app)
 
 if not app.debug:
     # 使用 SMTP 发送错误邮件

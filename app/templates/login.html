@@ -1,29 +1,22 @@
 {% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_field %}
+
 
 {% block content %}
-<h1>Sign In</h1>
+<h3 class="text-center my-4">Welcome back!</h3>
 <form action="" method="post" novalidate>
   {{ form.hidden_tag() }}
-  <p>
-    {{ form.username.label }}<br>
-    {{ form.username(size=32) }}<br>
-    {% for error in form.username.errors %}
-    <span style="color: red;">[{{ error }}]</span>
-    {% endfor %}
-  </p>
-  <p>
-    {{ form.password.label }}<br>
-    {{ form.password(size=32) }}<br>
-    {% for error in form.password.errors %}
-    <span style="color: red;">[{{ error }}]</span>
-    {% endfor %}
-  </p>
-  <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-  <p>{{ form.submit() }}</p>
+  {{ render_field(form.username) }}
+  {{ render_field(form.password) }}
+  <div class="d-flex justify-content-between">
+    {{ render_field(form.remember_me) }}
+    <p>
+      <a href="{{ url_for('reset_password_request') }}">Forgot Your Password?</a>
+    </p>
+  </div>
+  <div class="d-grid">
+    {{ render_field(form.submit) }}
+  </div>
+  <p class="text-center mt-3">Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
 </form>
-<p>New User? <a href="{{ url_for('register') }}">Click to Register!</a></p>
-<p>
-  Forgot Your Password?
-  <a href="{{ url_for('reset_password_request') }}">Click to Reset It</a>
-</p>
 {% endblock %}

@@ -1,46 +1,43 @@
 {% extends "base.html" %}
+{% from 'bootstrap5/pagination.html' import render_pagination %}
+
 
 {% block content %}
-<table>
-  <tr valign="top">
-    <td><img src="{{ user.avatar(128) }}"></td>
-    <td>
-      <h1>User: {{ user.username }}</h1>
-      {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
-      {% if user.last_seen %}<p>Last seen on: {{ user.last_seen }}</p>{% endif %}
-      <p>{{ user.followers_count() }} followers, {{ user.following_count() }} following.</p>
-
+<div class="d-flex flex-column my-4 gap-2">
+  <div class="d-flex justify-content-between align-items-start">
+    <img src="{{ user.avatar(128) }}" class="rounded-circle" />
+    <div>
       {% if user == current_user %}
-      <p><a href="{{ url_for('edit_profile') }}">Edit your profile</a></p>
+      <a href="{{ url_for('edit_profile') }}" class="btn btn-outline-primary" tabindex="-1" role="button"
+        aria-disabled="true">Edit your profile
+      </a>
       {% elif not current_user.is_following(user) %}
-      <p>
       <form action="{{ url_for('follow', username=user.username) }}" method="post">
         {{ form.hidden_tag() }}
-        {{ form.submit(value='Follow') }}
+        {{ form.submit(value='Follow', class='btn btn-outline-primary') }}
       </form>
-      </p>
       {% else %}
-      <p>
       <form action="{{ url_for('unfollow', username=user.username) }}" method="post">
         {{ form.hidden_tag() }}
-        {{ form.submit(value='Unfollow') }}
+        {{ form.submit(value='Unfollow', class='btn btn-outline-primary') }}
       </form>
-      </p>
       {% endif %}
-    </td>
-  </tr>
-</table>
-
-<hr>
+    </div>
+  </div>
+  <div class="fs-5">{{ user.username }}</div>
+  {% if user.about_me %}
+  <div class="text-muted text-break" style="font-size: 0.8rem;">{{ user.about_me }}</div>
+  {% endif%}
+  <div>
+    {{ user.followers_count() }} <span class="text-muted">followers</span>
+    <span class="mx-2">·</span>
+    {{ user.following_count() }} <span class="text-muted">following</span>
+  </div>
+  {% if user.last_seen %}<div>{{ user.last_seen }}</div>{% endif %}
+</div>
 
 {% for post in posts %}
 {% include '_post.html' %}
 {% endfor %}
-{% if prev_url %}
-<a href="{{ prev_url }}">Newer posts</a>
-{% endif %}
-{% if next_url %}
-<a href="{{ next_url }}">Older posts</a>
-{% endif %}
-
+{{ render_pagination(pagination) }}
 {% endblock %}

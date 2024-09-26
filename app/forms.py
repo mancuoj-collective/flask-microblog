@@ -39,7 +39,11 @@ class RegistrationForm(FlaskForm):
 
 class EditProfileForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
-    about_me = TextAreaField("About me", validators=[Length(min=0, max=140)])
+    about_me = TextAreaField(
+        "About me",
+        validators=[Length(min=0, max=140)],
+        render_kw={"rows": 3, "maxlength": 140},
+    )
     submit = SubmitField("Submit")
 
     # 重载构造函数，初始化时传入原始用户名
@@ -62,7 +66,9 @@ class EmptyForm(FlaskForm):
 
 class PostForm(FlaskForm):
     post = TextAreaField(
-        "Say something", validators=[DataRequired(), Length(min=1, max=140)]
+        "",
+        validators=[DataRequired(), Length(min=1, max=140)],
+        render_kw={"placeholder": "Say something ...", "rows": 3, "maxlength": 140},
     )
     submit = SubmitField("Submit")
 

@@ -1,11 +1,11 @@
-<table>
-  <tr valign="top">
-    <td><img src="{{ post.author.avatar(36) }}"></td>
-    <td>
-      <a href="{{ url_for('user', username=post.author.username) }}">
-        {{ post.author.username }}
-      </a>
-      says:<br>{{ post.body }}
-    </td>
-  </tr>
-</table>
+<div class="d-flex flex-column my-3 border p-3 gap-2 rounded">
+  <div class="d-flex gap-2 align-items-center">
+    <img class="rounded-circle" src="{{ post.author.avatar(24) }}">
+    <a href="{{ url_for('user', username=post.author.username) }}" class="text-decoration-none text-muted">
+      {{ post.author.username }}
+    </a>
+  </div>
+  <div class="text-break">
+    {{ post.body }}
+  </div>
+</div>

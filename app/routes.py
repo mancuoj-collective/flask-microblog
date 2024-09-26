@@ -35,24 +35,22 @@ def index():
         post = Post(body=form.post.data, author=current_user)
         db.session.add(post)
         db.session.commit()
-        flash("Your post is now live!")
+        flash("Your post is now live!", "success")
         return redirect(url_for("index"))
     page = request.args.get("page", 1, type=int)
-    posts = db.paginate(
+    pagination = db.paginate(
         current_user.following_posts(),
         page=page,
         per_page=app.config["POSTS_PER_PAGE"],
         error_out=False,
     )
-    next_url = url_for("index", page=posts.next_num) if posts.has_next else None
-    prev_url = url_for("index", page=posts.prev_num) if posts.has_prev else None
+    posts = pagination.items
     return render_template(
         "index.html",
         title="Home",
         form=form,
-        posts=posts.items,
-        next_url=next_url,
-        prev_url=prev_url,
+        pagination=pagination,
+        posts=posts,
     )
 
 
@@ -61,17 +59,15 @@ def index():
 def explore():
     page = request.args.get("page", 1, type=int)
     query = sa.select(Post).order_by(Post.timestamp.desc())
-    posts = db.paginate(
+    pagination = db.paginate(
         query, page=page, per_page=app.config["POSTS_PER_PAGE"], error_out=False
     )
-    next_url = url_for("explore", page=posts.next_num) if posts.has_next else None
-    prev_url = url_for("explore", page=posts.prev_num) if posts.has_prev else None
+    posts = pagination.items
     return render_template(
         "index.html",
         title="Explore",
-        posts=posts.items,
-        next_url=next_url,
-        prev_url=prev_url,
+        pagination=pagination,
+        posts=posts,
     )
 
 
@@ -85,7 +81,7 @@ def login():
             sa.select(User).where(User.username == form.username.data)
         )
         if user is None or not user.check_password(form.password.data):
-            flash("Invalid username or password")
+            flash("Invalid username or password", "danger")
             return redirect(url_for("login"))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get("next")
@@ -111,7 +107,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash("Congratulations, you are now a registered user!")
+        flash("Congratulations, you are now a registered user!", "success")
         return redirect(url_for("login"))
     return render_template("register.html", title="Register", form=form)
 
@@ -143,7 +139,7 @@ def reset_password(token):
     if form.validate_on_submit():
         user.set_password(form.password.data)
         db.session.commit()
-        flash("Your password has been reset.")
+        flash("Your password has been reset.", "success")
         return redirect(url_for("login"))
     return render_template("reset_password.html", form=form)
 
@@ -154,26 +150,16 @@ def user(username):
     user = db.first_or_404(sa.select(User).where(User.username == username))
     page = request.args.get("page", 1, type=int)
     query = user.posts.select().order_by(Post.timestamp.desc())
-    posts = db.paginate(
+    pagination = db.paginate(
         query, page=page, per_page=app.config["POSTS_PER_PAGE"], error_out=False
     )
-    next_url = (
-        url_for("user", username=user.username, page=posts.next_num)
-        if posts.has_next
-        else None
-    )
-    prev_url = (
-        url_for("user", username=user.username, page=posts.prev_num)
-        if posts.has_prev
-        else None
-    )
+    posts = pagination.items
     form = EmptyForm()
     return render_template(
         "user.html",
         user=user,
-        posts=posts.items,
-        next_url=next_url,
-        prev_url=prev_url,
+        pagination=pagination,
+        posts=posts,
         form=form,
     )
 
@@ -186,8 +172,8 @@ def edit_profile():
         current_user.username = form.username.data
         current_user.about_me = form.about_me.data
         db.session.commit()
-        flash("Your changes have been saved.")
-        return redirect(url_for("edit_profile"))
+        flash("Your changes have been saved.", "success")
+        return redirect(url_for("user", username=current_user.username))
     elif request.method == "GET":
         form.username.data = current_user.username
         form.about_me.data = current_user.about_me
@@ -201,10 +187,10 @@ def follow(username):
     if form.validate_on_submit():
         user = db.session.scalar(sa.select(User).where(User.username == username))
         if user is None:
-            flash(f"User {username} not found.")
+            flash(f"User {username} not found.", "danger")
             return redirect(url_for("index"))
         if user == current_user:
-            flash("You cannot follow yourself!")
+            flash("You cannot follow yourself!", "warning")
             return redirect(url_for("user", username=username))
         current_user.follow(user)
         db.session.commit()
@@ -221,10 +207,10 @@ def unfollow(username):
     if form.validate_on_submit():
         user = db.session.scalar(sa.select(User).where(User.username == username))
         if user is None:
-            flash(f"User {username} not found.")
+            flash(f"User {username} not found.", "danger")
             return redirect(url_for("index"))
         if user == current_user:
-            flash("You cannot unfollow yourself!")
+            flash("You cannot unfollow yourself!", "warning")
             return redirect(url_for("user", username=username))
         current_user.unfollow(user)
         db.session.commit()
