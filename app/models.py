@@ -24,13 +24,13 @@ class User(UserMixin, db.Model):
     # 反向关联，和 Post 建立双向通信
     posts: so.WriteOnlyMapped["Post"] = so.relationship(back_populates="author")
 
-    def avatar(self, size):
-        digest = md5(self.email.lower().encode("utf-8")).hexdigest()
-        return f"https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}"
-
     # __repr__ 方法用于在调试和日志中打印对象，便于调试
     def __repr__(self):
         return f"<User {self.username}>"
+
+    def avatar(self, size):
+        digest = md5(self.email.lower().encode("utf-8")).hexdigest()
+        return f"https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}"
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

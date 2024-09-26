@@ -1,5 +1,14 @@
 {
   "[html]": {
     "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "[python]": {
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "editor.defaultFormatter": "charliermarsh.ruff"
   }
 }
