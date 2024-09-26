@@ -14,4 +14,4 @@ class Config:
     MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     MAIL_FROM = os.environ.get("MAIL_FROM")
-    ADMINS = os.environ.get("ADMINS").split(",")
+    ADMINS = os.environ.get("ADMINS", "").split(",")
