@@ -8,8 +8,8 @@
     <img src="{{ user.avatar(128) }}" class="rounded-circle" />
     <div>
       {% if user == current_user %}
-      <a href="{{ url_for('edit_profile') }}" class="btn btn-outline-primary" tabindex="-1" role="button"
-        aria-disabled="true">Edit your profile
+      <a href="{{ url_for('edit_profile') }}" class="btn btn-outline-primary" tabindex="-1" role="button">
+        Edit your profile
       </a>
       {% elif not current_user.is_following(user) %}
       <form action="{{ url_for('follow', username=user.username) }}" method="post">

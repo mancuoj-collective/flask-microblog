@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>File Not Found</h1>
-<p><a href="{{ url_for('index') }}">Back</a></p>
+<div class="d-flex flex-column my-5 gap-3 align-items-center">
+  <h3>404 Not Found</h3>
+  <a href="{{ url_for('index') }}" class="btn btn-outline-primary" tabindex="-1" role="button">
+    Back Home
+  </a>
+</div>
 {% endblock %}
