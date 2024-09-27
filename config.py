@@ -16,4 +16,4 @@ class Config:
     MAIL_FROM = os.environ.get("MAIL_FROM")
     ADMINS = os.environ.get("ADMINS", "").split(",")
     POSTS_PER_PAGE = 20
-    BOOTSTRAP_BOOTSWATCH_THEME = "flatly"
+    BOOTSTRAP_BOOTSWATCH_THEME = "United"

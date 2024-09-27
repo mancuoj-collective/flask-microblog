@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% from 'bootstrap5/form.html' import render_field %}
-{% from 'bootstrap5/pagination.html' import render_pagination %}
 
 
 {% block content %}
@@ -17,5 +16,5 @@
 {% for post in posts %}
 {% include '_post.html' %}
 {% endfor %}
-{{ render_pagination(pagination) }}
+{% include '_pagination.html' %}
 {% endblock %}
