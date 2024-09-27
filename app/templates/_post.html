@@ -1,7 +1,7 @@
 <div class="d-flex flex-column mt-3 border p-3 gap-3 rounded">
   <div class="d-flex gap-2 align-items-center">
     <img class="rounded" src="{{ post.author.avatar(24) }}">
-    <a href="{{ url_for('user', username=post.author.username) }}" class="text-decoration-none text-muted">
+    <a href="{{ url_for('main.user', username=post.author.username) }}" class="text-decoration-none text-muted">
       {{ post.author.username }}
     </a>
     <div class="text-muted ms-auto">

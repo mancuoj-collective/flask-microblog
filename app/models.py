@@ -6,10 +6,11 @@ from typing import Optional
 import jwt
 import sqlalchemy as sa
 import sqlalchemy.orm as so
+from flask import current_app
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from app import app, db, login
+from app import db, login
 
 followers = sa.Table(
     "followers",
@@ -19,7 +20,6 @@ followers = sa.Table(
 )
 
 
-# UserMixin 提供了四个通用方法，is_authenticated, is_active, is_anonymous, get_id
 class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True, unique=True)
@@ -29,10 +29,7 @@ class User(UserMixin, db.Model):
     last_seen: so.Mapped[Optional[datetime]] = so.mapped_column(
         default=lambda: datetime.now(timezone.utc)
     )
-
-    # 反向关联，和 Post 建立双向通信
     posts: so.WriteOnlyMapped["Post"] = so.relationship(back_populates="author")
-    # secondary 参数指定关联表，`.c` 用于访问关联表的列
     following: so.WriteOnlyMapped["User"] = so.relationship(
         secondary=followers,
         primaryjoin=(followers.c.follower_id == id),
@@ -46,7 +43,6 @@ class User(UserMixin, db.Model):
         back_populates="following",
     )
 
-    # __repr__ 方法用于在调试和日志中打印对象，便于调试
     def __repr__(self):
         return f"<User {self.username}>"
 
@@ -63,16 +59,16 @@ class User(UserMixin, db.Model):
     def get_reset_password_token(self, expires_in=600):
         return jwt.encode(
             {"reset_password": self.id, "exp": time() + expires_in},
-            app.config["SECRET_KEY"],
+            current_app.config["SECRET_KEY"],
             algorithm="HS256",
         )
 
     @staticmethod
     def verify_reset_password_token(token):
         try:
-            id = jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])[
-                "reset_password"
-            ]
+            id = jwt.decode(
+                token, current_app.config["SECRET_KEY"], algorithms=["HS256"]
+            )["reset_password"]
         except:  # noqa: E722
             return
         return db.session.get(User, id)
@@ -106,27 +102,20 @@ class User(UserMixin, db.Model):
         Follower = so.aliased(User)
         query = (
             sa.select(Post)
-            # 连接 Post 表和 Author 表
             .join(Post.author.of_type(Author))
-            # 连接 Author 表和 Follower 表，isouter=True 表示左连接
-            # 左连接：将所有符合条件的记录都查询出来，即使 Follower 表中没有对应的记录
             .join(Author.followers.of_type(Follower), isouter=True)
-            # 连接条件：Follower 表的 id 等于 self.id 或者 Author 表的 id 等于 self.id
             .where(
                 sa.or_(
                     Follower.id == self.id,
                     Author.id == self.id,
                 )
             )
-            # 分组：根据 Post 表的 id 分组去重
             .group_by(Post)
-            # 排序：根据 Post 表的 timestamp 列降序排序
             .order_by(Post.timestamp.desc())
         )
         return query
 
 
-# Flask-Login 需要从 session 中读取当前用户状态
 @login.user_loader
 def load_user(id):
     return db.session.get(User, int(id))
@@ -135,7 +124,6 @@ def load_user(id):
 class Post(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     body: so.Mapped[str] = so.mapped_column(sa.String(140))
-    # 用 lambda 来保证每次创建时都使用当前时间
     timestamp: so.Mapped[datetime] = so.mapped_column(
         index=True, default=lambda: datetime.now(timezone.utc)
     )
