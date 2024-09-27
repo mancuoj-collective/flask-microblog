@@ -4,6 +4,9 @@
     <a href="{{ url_for('user', username=post.author.username) }}" class="text-decoration-none text-muted">
       {{ post.author.username }}
     </a>
+    <div class="text-muted ms-auto">
+      {{ moment(post.timestamp).fromNow() }}
+    </div>
   </div>
   <div class="text-break">
     {{ post.body }}

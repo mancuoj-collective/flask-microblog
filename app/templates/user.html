@@ -2,7 +2,7 @@
 
 
 {% block content %}
-<div class="d-flex flex-column my-4 gap-2">
+<div class="d-flex flex-column my-4 gap-1">
   <div class="d-flex justify-content-between align-items-start">
     <img src="{{ user.avatar(128) }}" class="rounded" />
     <div>
@@ -32,7 +32,11 @@
     <span class="mx-2">·</span>
     {{ user.following_count() }} <span class="text-muted">following</span>
   </div>
-  {% if user.last_seen %}<div>{{ user.last_seen }}</div>{% endif %}
+  <!-- {% if user.last_seen %}
+  <div>
+    Last Seen: {{ moment(user.last_seen).format('lll') }}
+  </div>
+  {% endif %} -->
 </div>
 
 {% for post in posts %}

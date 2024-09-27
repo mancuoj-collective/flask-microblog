@@ -7,6 +7,7 @@ from flask_bootstrap import Bootstrap5
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
+from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 
 from config import Config
@@ -20,6 +21,7 @@ login = LoginManager(app)
 login.login_view = "login"
 mail = Mail(app)
 bootstrap = Bootstrap5(app)
+moment = Moment(app)
 
 if not app.debug:
     # 使用 SMTP 发送错误邮件
