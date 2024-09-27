@@ -17,14 +17,16 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
-# @login_required 找不到用户时，重定向到 login 路由
 login.login_view = "login"
 mail = Mail(app)
 bootstrap = Bootstrap5(app)
 moment = Moment(app)
 
+from app.errors import bp as errors_bp  # noqa: E402
+
+app.register_blueprint(errors_bp)
+
 if not app.debug:
-    # 使用 SMTP 发送错误邮件
     if app.config["MAIL_SERVER"]:
         auth = None
         if app.config["MAIL_USERNAME"] or app.config["MAIL_PASSWORD"]:
@@ -45,7 +47,6 @@ if not app.debug:
 
     if not os.path.exists("logs"):
         os.mkdir("logs")
-    # 限制日志文件大小为 10 KB，超过后自动创建新的日志文件，保留最近的 10 个日志文件
     file_handler = RotatingFileHandler(
         "logs/microblog.log", maxBytes=10240, backupCount=10
     )
@@ -60,4 +61,4 @@ if not app.debug:
     app.logger.setLevel(logging.INFO)
     app.logger.info("Flask Microblog startup")
 
-from app import errors, models, routes  # noqa: E402, F401
+from app import models, routes  # noqa: E402, F401
