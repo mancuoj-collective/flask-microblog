@@ -1,16 +1,4 @@
 services:
-  mysql:
-    image: mysql:latest
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-      MYSQL_DATABASE: microblog
-      MYSQL_USER: microblog
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    networks:
-      - microblog-network
-
   web:
     build: .
     ports:
@@ -24,10 +12,50 @@ services:
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       MAIL_FROM: ${MAIL_FROM}
       ADMINS: ${ADMINS}
-      DATABASE_URL: mysql+pymysql://microblog:${MYSQL_PASSWORD}@mysql/microblog
+      DATABASE_URL: mysql+pymysql://microblog:${MYSQL_PASSWORD}@db/microblog
+      ELASTICSEARCH_URL: http://es:9200
+    networks:
+      - microblog-network
+    depends_on:
+      db:
+        condition: service_healthy
+    develop:
+      watch:
+        - action: rebuild
+          path: .
+
+  db:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: microblog
+      MYSQL_USER: microblog
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - microblog-network
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    ports:
+      - "9200:9200"
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: false
     networks:
       - microblog-network
 
 networks:
   microblog-network:
     driver: bridge
+
+volumes:
+  mysql_data:
