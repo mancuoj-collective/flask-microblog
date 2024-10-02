@@ -74,6 +74,7 @@ def user(username):
     form = EmptyForm()
     return render_template(
         "user.html",
+        title="Profile",
         user=user,
         pagination=pagination,
         posts=posts,
