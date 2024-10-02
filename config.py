@@ -18,5 +18,6 @@ class Config:
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     MAIL_FROM = os.environ.get("MAIL_FROM")
     ADMINS = os.environ.get("ADMINS", "").split(",")
-    POSTS_PER_PAGE = 20
+    POSTS_PER_PAGE = 10
     BOOTSTRAP_BOOTSWATCH_THEME = "United"
+    ELASTICSEARCH_URL = os.environ.get("ELASTICSEARCH_URL")

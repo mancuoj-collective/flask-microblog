@@ -35,6 +35,14 @@
           {{ render_nav_item('main.explore', 'Explore') }}
         </ul>
         <ul class="navbar-nav">
+          {% if g.search_form %}
+          <form class="navbar-form me-2" method="get" action="{{ url_for('main.search') }}">
+            <div class="form-group">
+              {{ g.search_form.q(size=18, class='form-control', placeholder=g.search_form.q.label.text) }}
+            </div>
+          </form>
+          {% endif %}
+
           {% if current_user.is_anonymous %}
           {{ render_nav_item('auth.login', 'Login') }}
           {% else %}

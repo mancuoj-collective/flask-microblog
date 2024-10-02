@@ -2,6 +2,7 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler, SMTPHandler
 
+from elasticsearch import Elasticsearch
 from flask import Flask
 from flask_bootstrap import Bootstrap5
 from flask_login import LoginManager
@@ -31,6 +32,11 @@ def create_app(config_class=Config):
     mail.init_app(app)
     bootstrap.init_app(app)
     moment.init_app(app)
+    app.elasticsearch = (
+        Elasticsearch([app.config["ELASTICSEARCH_URL"]])
+        if app.config["ELASTICSEARCH_URL"]
+        else None
+    )
 
     from app.auth import bp as auth_bp
     from app.errors import bp as errors_bp
