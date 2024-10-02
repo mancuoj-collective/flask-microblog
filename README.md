@@ -12,3 +12,9 @@ pip install -r requirements.txt
 flask db upgrade
 flask run
 ```
+
+Or use docker compose:
+
+```sh
+docker compose up -d
+```
