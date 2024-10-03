@@ -38,9 +38,14 @@ class PostForm(FlaskForm):
     post = TextAreaField(
         "",
         validators=[DataRequired(), Length(min=1, max=140)],
-        render_kw={"placeholder": "Say something ...", "rows": 3, "maxlength": 140},
+        render_kw={
+            "placeholder": "What's on your mind ...",
+            "rows": 3,
+            "minlength": 1,
+            "maxlength": 140,
+        },
     )
-    submit = SubmitField("Submit")
+    submit = SubmitField("Publish")
 
 
 class SearchForm(FlaskForm):
@@ -52,3 +57,17 @@ class SearchForm(FlaskForm):
         if "meta" not in kwargs:
             kwargs["meta"] = {"csrf": False}
         super(SearchForm, self).__init__(*args, **kwargs)
+
+
+class MessageForm(FlaskForm):
+    message = TextAreaField(
+        "",
+        validators=[DataRequired(), Length(min=1, max=140)],
+        render_kw={
+            "placeholder": "Write a message ...",
+            "rows": 3,
+            "minlength": 1,
+            "maxlength": 140,
+        },
+    )
+    submit = SubmitField("Send")

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_field %}
+
+
+{% block content %}
+<form action="" method="post">
+  {{ form.hidden_tag() }}
+  {{ render_field(form.message) }}
+  <div class="d-grid">
+    {{ render_field(form.submit) }}
+  </div>
+</form>
+{% endblock %}
