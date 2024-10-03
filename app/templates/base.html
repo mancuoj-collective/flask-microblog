@@ -46,6 +46,13 @@
           {% if current_user.is_anonymous %}
           {{ render_nav_item('auth.login', 'Login') }}
           {% else %}
+          <a class="nav-item nav-link" href="{{ url_for('main.messages') }}">
+            Messages
+            {% set unread_message_count = current_user.unread_message_count() %}
+            <span id="message_count" class="badge text-bg-danger">
+              {{ unread_message_count }}
+            </span>
+          </a>
           {{ render_nav_item('main.user', 'Profile', username=current_user.username) }}
           {{ render_nav_item('auth.logout', 'Logout') }}
           {% endif %}

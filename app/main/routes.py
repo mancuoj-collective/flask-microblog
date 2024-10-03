@@ -6,8 +6,8 @@ from flask_login import current_user, login_required
 
 from app import db
 from app.main import bp
-from app.main.forms import EditProfileForm, EmptyForm, PostForm, SearchForm
-from app.models import Post, User
+from app.main.forms import EditProfileForm, EmptyForm, MessageForm, PostForm, SearchForm
+from app.models import Message, Post, User
 
 
 @bp.before_app_request
@@ -168,3 +168,32 @@ def search():
         prev_url=prev_url,
         total_pages=total_pages,
     )
+
+
+@bp.route("/send_message/<recipient>", methods=["GET", "POST"])
+@login_required
+def send_message(recipient):
+    user = db.first_or_404(sa.select(User).where(User.username == recipient))
+    form = MessageForm()
+    if form.validate_on_submit():
+        msg = Message(author=current_user, recipient=user, body=form.message.data)
+        db.session.add(msg)
+        db.session.commit()
+        return redirect(url_for("main.user", username=recipient))
+    return render_template(
+        "send_message.html", title="Send Message", form=form, recipient=recipient
+    )
+
+
+@bp.route("/messages")
+@login_required
+def messages():
+    current_user.last_message_read_time = datetime.now(timezone.utc)
+    db.session.commit()
+    page = request.args.get("page", 1, type=int)
+    query = current_user.messages_received.select().order_by(Message.timestamp.desc())
+    pagination = db.paginate(
+        query, page=page, per_page=current_app.config["POSTS_PER_PAGE"], error_out=False
+    )
+    messages = pagination.items
+    return render_template("messages.html", pagination=pagination, messages=messages)

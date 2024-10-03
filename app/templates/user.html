@@ -8,7 +8,8 @@
     <img src="{{ user.avatar(128) }}" class="rounded" />
     <div class="d-flex gap-2">
       {% if user != current_user %}
-      <a class="btn btn-outline-primary d-flex align-items-center justify-content-center" tabindex="-1" role="button">
+      <a href="{{ url_for('main.send_message', recipient=user.username) }}"
+        class="btn btn-outline-primary d-flex align-items-center justify-content-center" tabindex="-1" role="button">
         {{ render_icon('envelope', 24) }}
       </a>
       {% endif %}
