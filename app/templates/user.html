@@ -17,6 +17,11 @@
       <a href="{{ url_for('main.edit_profile') }}" class="btn btn-outline-primary" tabindex="-1" role="button">
         Edit your profile
       </a>
+      {% if not current_user.get_task_in_progress('export_posts') %}
+      <a href="{{ url_for('main.export_posts') }}" class="btn btn-outline-primary" tabindex="-1" role="button">
+        Export your posts
+      </a>
+      {% endif %}
       {% elif not current_user.is_following(user) %}
       <form action="{{ url_for('main.follow', username=user.username) }}" method="post">
         {{ form.hidden_tag() }}

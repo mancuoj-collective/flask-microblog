@@ -21,3 +21,4 @@ class Config:
     POSTS_PER_PAGE = 10
     BOOTSTRAP_BOOTSWATCH_THEME = "United"
     ELASTICSEARCH_URL = os.environ.get("ELASTICSEARCH_URL")
+    REDIS_URL = os.environ.get("REDIS_URL") or "redis://"
