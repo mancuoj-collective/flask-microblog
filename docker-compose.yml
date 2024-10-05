@@ -2,7 +2,7 @@ services:
   web:
     build: .
     ports:
-      - "5000:5000"
+      - '5000:5000'
     environment:
       SECRET_KEY: ${SECRET_KEY}
       MAIL_SERVER: ${MAIL_SERVER}
@@ -14,22 +14,19 @@ services:
       ADMINS: ${ADMINS}
       DATABASE_URL: mysql+pymysql://microblog:${MYSQL_PASSWORD}@db/microblog
       ELASTICSEARCH_URL: http://es:9200
+      REDIS_URL: redis://redis:6379/0
     networks:
       - microblog-network
     depends_on:
       db:
         condition: service_healthy
-    develop:
-      watch:
-        - action: rebuild
-          path: .
 
   db:
     image: mysql:latest
     ports:
-      - "3306:3306"
+      - '3306:3306'
     environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
       MYSQL_DATABASE: microblog
       MYSQL_USER: microblog
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
@@ -38,7 +35,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       interval: 5s
       timeout: 10s
       retries: 5
@@ -46,12 +43,48 @@ services:
   es:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
     ports:
-      - "9200:9200"
+      - '9200:9200'
     environment:
       discovery.type: single-node
       xpack.security.enabled: false
     networks:
       - microblog-network
+
+  redis:
+    image: redis:latest
+    ports:
+      - '6379:6379'
+    networks:
+      - microblog-network
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rq-worker:
+    build: .
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      MAIL_SERVER: ${MAIL_SERVER}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USE_TLS: ${MAIL_USE_TLS}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_FROM: ${MAIL_FROM}
+      ADMINS: ${ADMINS}
+      DATABASE_URL: mysql+pymysql://microblog:${MYSQL_PASSWORD}@db/microblog
+      ELASTICSEARCH_URL: http://es:9200
+      REDIS_URL: redis://redis:6379/0
+    networks:
+      - microblog-network
+    entrypoint: rq
+    command: worker -u redis://redis:6379/0 microblog-tasks
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
 networks:
   microblog-network:

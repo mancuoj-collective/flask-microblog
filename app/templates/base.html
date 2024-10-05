@@ -68,7 +68,7 @@
       {% with tasks = current_user.get_tasks_in_progress() %}
       {% if tasks %}
       {% for task in tasks %}
-      <div class="alert alert-success" role="alert">
+      <div class="alert alert-success my-3" role="alert">
         {{ task.description }}
         <span id="{{ task.id }}-progress">{{ task.get_progress() }}</span>%
       </div>
@@ -90,6 +90,13 @@
       const count = document.getElementById('message_count');
       count.innerText = n;
       count.style.visibility = n ? 'visible' : 'hidden';
+    }
+
+    function set_task_progress(task_id, progress) {
+      const progressElement = document.getElementById(task_id + '-progress');
+      if (progressElement) {
+        progressElement.innerText = progress;
+      }
     }
 
     {% if current_user.is_authenticated %}
